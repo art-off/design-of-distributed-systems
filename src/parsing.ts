@@ -12,7 +12,7 @@ const validateMathExprJson = (json: any): void => {
         throw new Error('"left" is required')
     }
     if (operator != MathOperator.Fact && !right) {
-        throw new Error('"right" is reguired with non fact operation')
+        throw new Error('"right" is reguired with non fact operator')
     }
 }
 
@@ -29,4 +29,11 @@ export const parseMathExpr = (jsonString: string): IMathExpr => {
         left: json['left'],
         right: json['right'],
     }
+}
+
+export const mathExprToString = (expr: IMathExpr): string => {
+    if (expr.operator == MathOperator.Fact) {
+        return `${expr.left}${expr.operator}`;
+    }
+    return `${expr.left} ${expr.operator} ${expr.right}`
 }

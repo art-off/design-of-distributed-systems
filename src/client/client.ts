@@ -1,15 +1,17 @@
-var net = require('net');
+import { Socket } from "net";
+import { randomItem } from "../utils/array";
+import { IMathExpr, MathOperator } from "../models";
+import { randomInt } from "crypto";
+import { mathExprToString } from "../parsing";
+import { generateRandomMathExpr } from "./utils";
 
-var HOST = 'localhost';
-var PORT = 1234;
+const HOST = 'localhost';
+const PORT = 1234;
 
-var client = new net.Socket();
+const client = new Socket();
 
-client.on('data', function (data) {
-    console.log('Client received: ' + data);
-    if (data.toString().endsWith('exit')) {
-        client.destroy();
-    }
+client.on('data', (data) => {
+    console.log(`Received: ${data.toString()}`)
 });
 
 // Add a 'close' event handler for the client socket
@@ -22,7 +24,14 @@ client.on('error', function (err) {
 });
 
 client.connect(PORT, HOST, function () {
-    console.log('Client connected to: ' + HOST + ':' + PORT);
-    // Write a message to the socket as soon as the client is connected, the server will receive it as message from the client 
-    client.write('Hello World!');
+    console.log(`Client connected to : ${HOST}:${PORT}`)
+    sendRandomMathExprMessage(client)
 });
+
+// MARK: - helpers
+const sendRandomMathExprMessage = (sock: Socket) => {
+    const mathExpr = generateRandomMathExpr();
+    const jsonString = JSON.stringify(mathExpr)
+    sock.write(jsonString)
+    console.log(`Send: ${mathExprToString(mathExpr)}`)
+}

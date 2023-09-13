@@ -1,29 +1,32 @@
 import { createServer, Socket } from "net";
 
+import { MathOperator } from "../models";
+import { mathExprToString, parseMathExpr } from "../parsing";
+import { calculateMathExpr, log, sockAddress } from "./utils";
+
 // Configuration parameters
 var HOST = 'localhost';
 var PORT = 1234;
 
 const handleClinetConnection = (sock: Socket) => {
-    var remoteAddress = sock.remoteAddress + ':' + sock.remotePort;
-    console.log('new client connected: %s', remoteAddress);
-
     sock.on('data', (data) => {
-        console.log('%s Says: %s', remoteAddress, data);
-        sock.write(data);
-        sock.write(' exit');
-    });
-    sock.on('close', () => {
-        console.log('connection from %s closed', remoteAddress);
-    });
-    sock.on('error', (err) => {
-        console.log('Connection %s error: %s', remoteAddress, err.message);
+        const jsonString = data.toString();
+        try {
+            const mathExpr = parseMathExpr(jsonString);
+            log(sock, `Received: ${mathExprToString(mathExpr)}`);
+            const result = calculateMathExpr(mathExpr);
+            log(sock, `Calculated: ${result}`);
+            sock.write(result.toString())
+        } catch (e) {
+            let message = `Error: ${e.message}`
+            log(sock, message);
+            sock.write(message);
+        }
     });
 }
 
-// Create Server instance 
-var server = createServer(handleClinetConnection);
+const server = createServer(handleClinetConnection);
 
-server.listen(PORT, HOST, function () {
+server.listen(PORT, HOST, () => {
     console.log('server listening on %j', server.address());
 });
