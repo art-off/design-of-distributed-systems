@@ -16,24 +16,34 @@ const validateMathExprJson = (json: any): void => {
     }
 }
 
-export const parseMathExpr = (jsonString: string): IMathExpr => {
-    const json = JSON.parse(jsonString);
+export const parseLogin = (stringMessage: string): string => {
+    const json = JSON.parse(stringMessage);
+
+    const login = json['login']
+    if (!login) {
+        throw new Error('"login" is required')
+    }
+    return login
+}
+
+export const parseMathExpr = (stringMessage: string): IMathExpr => {
+    const json = JSON.parse(stringMessage);
+
+    const mathExprJson = json['expr']
+
+    if (!mathExprJson) {
+        throw new Error('"expr" is required')
+    }
 
     try {
-        validateMathExprJson(json)
+        validateMathExprJson(mathExprJson)
     } catch (e) {
         throw e
     }
-    return {
-        operator: json['operator'],
-        left: json['left'],
-        right: json['right'],
-    }
-}
 
-export const mathExprToString = (expr: IMathExpr): string => {
-    if (expr.operator == MathOperator.Fact) {
-        return `${expr.left}${expr.operator}`;
+    return {
+        operator: mathExprJson['operator'],
+        left: mathExprJson['left'],
+        right: mathExprJson['right'],
     }
-    return `${expr.left} ${expr.operator} ${expr.right}`
 }

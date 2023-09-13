@@ -1,9 +1,9 @@
 import { Socket } from "net";
-import { randomItem } from "../utils/array";
+import { randomItem } from "../utils";
 import { IMathExpr, MathOperator } from "../models";
 import { randomInt } from "crypto";
-import { mathExprToString } from "../parsing";
-import { generateRandomMathExpr } from "./utils";
+import { mathExprToString } from "../utils";
+import { generateRandomLogin, generateRandomMathExpr } from "./utils";
 
 const HOST = 'localhost';
 const PORT = 1234;
@@ -16,13 +16,21 @@ client.on('data', (data) => {
 
 client.connect(PORT, HOST, function () {
     console.log(`Client connected to : ${HOST}:${PORT}`)
-    sendRandomMathExprMessage(client)
+    sendRandomMessage(client)
 });
 
 // MARK: - helpers
-const sendRandomMathExprMessage = (sock: Socket) => {
+const sendRandomMessage = (sock: Socket) => {
+    const login = generateRandomLogin();
     const mathExpr = generateRandomMathExpr();
-    const jsonString = JSON.stringify(mathExpr)
-    sock.write(jsonString)
-    console.log(`Send: ${mathExprToString(mathExpr)}`)
+
+    const jsonMessage = {
+        login: login,
+        expr: mathExpr,
+    }
+
+    const stringMessage = JSON.stringify(jsonMessage)
+    sock.write(stringMessage)
+
+    console.log(`Send: ${mathExprToString(mathExpr)}, login: ${login}`)
 }

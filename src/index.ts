@@ -1,6 +1,6 @@
 import { parseMathExpr } from "./parsing";
 import { MathOperator } from "./models";
-import { randomItem } from "./utils/array";
+import { randomItem } from "./utils";
 
 const value = randomItem(Object.values(MathOperator))
 

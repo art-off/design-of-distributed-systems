@@ -1,6 +1,6 @@
 import { Socket } from "net";
 import { IMathExpr, MathOperator } from "../models";
-import { mathExprToString } from "../parsing";
+import { mathExprToString } from "../utils";
 
 const factorialize = (num: number): number => {
     var result = num;
