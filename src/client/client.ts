@@ -14,15 +14,6 @@ client.on('data', (data) => {
     console.log(`Received: ${data.toString()}`)
 });
 
-// Add a 'close' event handler for the client socket
-client.on('close', function () {
-    console.log('Client closed');
-});
-
-client.on('error', function (err) {
-    console.error(err);
-});
-
 client.connect(PORT, HOST, function () {
     console.log(`Client connected to : ${HOST}:${PORT}`)
     sendRandomMathExprMessage(client)
