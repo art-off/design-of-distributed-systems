@@ -1,0 +1,16 @@
+{
+  "name": "design-of-distributed-systems",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "server": "tsc && node dist/server/server.js",
+    "client": "tsc && node dist/client/client.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.6.0",
+    "typescript": "^5.2.2"
+  }
+}
