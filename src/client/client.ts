@@ -10,10 +10,6 @@ const PORT = 8888;
 
 const client = new Socket();
 
-client.on('data', (data) => {
-    console.log(`Received: ${data.toString()}`)
-});
-
 client.connect(PORT, HOST, function () {
     console.log(`Client connected to : ${HOST}:${PORT}`)
     startSendingMessages(client);
@@ -22,13 +18,11 @@ client.connect(PORT, HOST, function () {
 // MARK: - helpers
 const startSendingMessages = async (sock: Socket) => {
     while (true) {
-        console.log('--')
-        sendRandomMessage(sock);
-        await sleep(1)
+        await sendRandomMessage(sock);
     }
 }
 
-const sendRandomMessage = (sock: Socket) => {
+const sendRandomMessage = async (sock: Socket) => {
     const login = generateRandomLogin();
     const mathExpr = generateRandomMathExpr();
 
@@ -38,7 +32,14 @@ const sendRandomMessage = (sock: Socket) => {
     }
 
     const stringMessage = JSON.stringify(jsonMessage)
-    sock.write(stringMessage)
 
-    console.log(`Send: ${mathExprToString(mathExpr)}, login: ${login}`)
+    const response = await sendAndGetResponse(sock, stringMessage);
+    console.log(`Sended: ${mathExprToString(mathExpr)}, login: ${login}; Received: ${response.toString()}`)
+}
+
+const sendAndGetResponse = async (sock: Socket, message: string): Promise<Buffer> => {
+    return new Promise((resosle, reject) => {
+        sock.once('data', resosle);
+        sock.write(message);
+    });
 }

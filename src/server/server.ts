@@ -19,7 +19,6 @@ const checkLogin = (login: string) => {
 }
 
 const handleClientData = async (sock: Socket, data: Buffer) => {
-    await sleep(1);
     const stringMessage = data.toString();
     try {
         const login = parseLogin(stringMessage);
@@ -29,6 +28,7 @@ const handleClientData = async (sock: Socket, data: Buffer) => {
         log(sock, `Received: ${mathExprToString(expr)}`);
 
         const result = calculateMathExpr(expr);
+        await sleep(4); // Симуляция долних вычислений
         log(sock, `Calculated: ${result}`);
 
         sock.write(result.toString())
