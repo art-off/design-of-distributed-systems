@@ -5,8 +5,8 @@ import { randomInt } from "crypto";
 import { mathExprToString } from "../utils";
 import { generateRandomLogin, generateRandomMathExpr } from "./utils";
 
-const HOST = 'localhost';
-const PORT = 1234;
+const HOST = 'server';
+const PORT = 8888;
 
 const client = new Socket();
 

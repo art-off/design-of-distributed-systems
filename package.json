@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "server": "tsc && node dist/server/server.js",
-    "client": "tsc && node dist/client/client.js"
+    "server": "tsc -p . && node build/server/server.js",
+    "client": "tsc -p . && node build/client/client.js",
+    "build": "tsc -p ."
   },
   "author": "",
   "license": "ISC",

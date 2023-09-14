@@ -5,8 +5,8 @@ import { mathExprToString, sleep } from "../utils";
 import { calculateMathExpr, log } from "./utils";
 
 // Configuration parameters
-var HOST = 'localhost';
-var PORT = 1234;
+var HOST = '0.0.0.0';
+var PORT = 8888;
 
 const ALLOWED_LOGINS = [
     'l0', 'l1', 'l2', 'l3', 'l4',

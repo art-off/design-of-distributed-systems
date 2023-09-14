@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    command: node build/server/server.js
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    deploy:
+      replicas: 3
+    command: node build/client/client.js
+    depends_on:
+      - server
