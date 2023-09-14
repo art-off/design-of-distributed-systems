@@ -10,3 +10,7 @@ export const mathExprToString = (expr: IMathExpr): string => {
     }
     return `${expr.left} ${expr.operator} ${expr.right}`
 }
+
+export const sleep = async (seconds: number) => {
+    await new Promise(r => setTimeout(r, seconds * 1000))
+}

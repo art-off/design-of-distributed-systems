@@ -2,7 +2,7 @@ import { createServer, Socket } from "net";
 
 import { parseLogin, parseMathExpr } from "../parsing";
 import { mathExprToString } from "../utils";
-import { calculateMathExpr, log, sockAddress } from "./utils";
+import { calculateMathExpr, log } from "./utils";
 
 // Configuration parameters
 var HOST = 'localhost';

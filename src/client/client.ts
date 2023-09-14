@@ -1,5 +1,5 @@
 import { Socket } from "net";
-import { randomItem } from "../utils";
+import { randomItem, sleep } from "../utils";
 import { IMathExpr, MathOperator } from "../models";
 import { randomInt } from "crypto";
 import { mathExprToString } from "../utils";
@@ -16,10 +16,18 @@ client.on('data', (data) => {
 
 client.connect(PORT, HOST, function () {
     console.log(`Client connected to : ${HOST}:${PORT}`)
-    sendRandomMessage(client)
+    startSendingMessages(client);
 });
 
 // MARK: - helpers
+const startSendingMessages = async (sock: Socket) => {
+    while (true) {
+        console.log('--')
+        sendRandomMessage(sock);
+        await sleep(1)
+    }
+}
+
 const sendRandomMessage = (sock: Socket) => {
     const login = generateRandomLogin();
     const mathExpr = generateRandomMathExpr();
