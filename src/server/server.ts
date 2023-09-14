@@ -1,8 +1,10 @@
 import { createServer, Socket } from "net";
 
-import { parseLogin, parseMathExpr } from "../parsing";
+import { parseLogin, parseMathExpr, parseStop } from "../parsing";
 import { mathExprToString, sleep } from "../utils";
 import { calculateMathExpr, log } from "./utils";
+
+var isServerActive = true;
 
 // Configuration parameters
 var HOST = '0.0.0.0';
@@ -19,10 +21,20 @@ const checkLogin = (login: string) => {
 }
 
 const handleClientData = async (sock: Socket, data: Buffer) => {
+    // Если сервер "отключен", то не обрабатываем ничего.
+    if (!isServerActive) { return; }
+
     const stringMessage = data.toString();
     try {
         const login = parseLogin(stringMessage);
         checkLogin(login);
+
+        const stop = parseStop(stringMessage);
+        if (stop) {
+            isServerActive = false;
+            log(sock, `Server is stopped`);
+            return;
+        }
 
         const expr = parseMathExpr(stringMessage);
         log(sock, `Received: ${mathExprToString(expr)}`);

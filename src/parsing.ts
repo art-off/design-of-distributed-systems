@@ -26,6 +26,11 @@ export const parseLogin = (stringMessage: string): string => {
     return login
 }
 
+export const parseStop = (stringMessage: string): boolean => {
+    const json = JSON.parse(stringMessage);
+    return json['stop'] || false
+}
+
 export const parseMathExpr = (stringMessage: string): IMathExpr => {
     const json = JSON.parse(stringMessage);
 
