@@ -23,7 +23,7 @@ const startSendingMessages = async (sock: Socket) => {
 const sendRandomMessage = async (sock: Socket) => {
     const login = generateRandomLogin();
 
-    if (randomInt(0, 6) == 0) {
+    if (randomInt(0, 9) == 0) {
         await sendStopCommand(sock, login);
     } else {
         await sendMathExprCommand(sock, login);
@@ -53,7 +53,7 @@ const sendStopCommand = async (sock: Socket, login: string) => {
     const stringMessage = JSON.stringify(jsonMessage);
 
     sock.write(stringMessage);
-    console.log(`Sended stop command`)
+    console.log(`Sended stop command, login: ${login}`)
 }
 
 const sendAndGetResponse = async (sock: Socket, message: string): Promise<Buffer> => {
