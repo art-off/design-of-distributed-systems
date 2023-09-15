@@ -1,13 +1,9 @@
 import { Socket } from "net";
-import { createSocket } from "dgram";
-import { networkInterfaces } from "os";
-import { getUdpBroadcastAddress, mathExprToString } from "../utils";
+import { mathExprToString, startUdpBroadcastOnUdpAddress } from "../utils";
 import { generateRandomLogin, generateRandomMathExpr } from "./utils";
 import { randomInt } from "crypto";
 
 const PORT = 8888;
-
-const client = new Socket();
 
 var currServerAddress: string | undefined = undefined;
 var SERVER_ADDRESSES = [];
@@ -15,6 +11,8 @@ const addServerAddress = (address: string) => {
     if (SERVER_ADDRESSES.includes(address)) { return; }
     SERVER_ADDRESSES.push(address);
 };
+
+const client = new Socket();
 
 const connectClient = (serverAddress: string) => {
     currServerAddress = serverAddress;
@@ -35,24 +33,12 @@ const onUpdBroadcastMessage = (message: Buffer, address: string) => {
     }
 };
 
-const startUpdBroudcast = async (address: string, port: number) => {
-    const udpBroadcastSocket = createSocket('udp4');
-    udpBroadcastSocket.on('message', (message, rinfo) => {
-        onUpdBroadcastMessage(message, rinfo.address)
-    });
-    udpBroadcastSocket.bind(() => {
-        udpBroadcastSocket.setBroadcast(true);
-        console.log(`[BROADCAST] udp broadcast client is started`)
-        udpBroadcastSocket.send('Hello xui', port, address)
-    });
-}
-const udpBroadcastAddress = getUdpBroadcastAddress();
-console.log(`[BROADCAST] udp broadcast address is ${udpBroadcastAddress}`)
-startUpdBroudcast(udpBroadcastAddress, PORT);
+const main = async () => {
+    startUdpBroadcastOnUdpAddress(PORT, onUpdBroadcastMessage)
+};
 
+main()
 
-
-// MARK: - helpers
 const startSendingMessages = async (sock: Socket) => {
     while (true) {
         await sendRandomMessage(sock);
