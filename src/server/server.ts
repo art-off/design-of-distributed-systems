@@ -1,4 +1,5 @@
 import { createServer, Socket } from "net";
+import { createSocket } from "dgram";
 
 import { parseLogin, parseMathExpr, parseStop } from "../parsing";
 import { mathExprToString, sleep } from "../utils";
@@ -56,7 +57,20 @@ const handleClinetConnection = (sock: Socket) => {
 }
 
 const server = createServer(handleClinetConnection);
-
 server.listen(PORT, HOST, () => {
     console.log('server listening on %j', server.address());
 });
+
+const startBroadcastSocket = async () => {
+    const updBroudcastSocket = createSocket('udp4');
+    updBroudcastSocket.on('message', (message, rinfo) => {
+        console.log(`[BROADCAST] [from ${rinfo.address}:${rinfo.port}]`);
+        updBroudcastSocket.send('i_am_server', rinfo.port, rinfo.address);
+    })
+    updBroudcastSocket.bind(PORT, () => {
+        updBroudcastSocket.setBroadcast(true)
+        console.log(`[BROADCAST] udp broadcast server is started on ${PORT}`)
+    })
+}
+
+startBroadcastSocket()
