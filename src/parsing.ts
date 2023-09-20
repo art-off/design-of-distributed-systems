@@ -11,7 +11,7 @@ const validateMathExprJson = (json: any): void => {
     if (!left) {
         throw new Error('"left" is required')
     }
-    if (operator != MathOperator.Fact && !right) {
+    if (operator != MathOperator.Fact && (right == undefined || right == null)) {
         throw new Error('"right" is reguired with non fact operator')
     }
 }
