@@ -62,13 +62,13 @@ server.listen(PORT, HOST, () => {
 });
 
 const startBroadcastSocket = async () => {
-    const updBroudcastSocket = createSocket('udp4');
-    updBroudcastSocket.on('message', (message, rinfo) => {
+    const udpBroudcastSocket = createSocket('udp4');
+    udpBroudcastSocket.on('message', (message, rinfo) => {
         console.log(`[BROADCAST] [from ${rinfo.address}:${rinfo.port}]`);
-        updBroudcastSocket.send('i_am_server', rinfo.port, rinfo.address);
+        udpBroudcastSocket.send('i_am_server', rinfo.port, rinfo.address);
     })
-    updBroudcastSocket.bind(PORT, () => {
-        updBroudcastSocket.setBroadcast(true)
+    udpBroudcastSocket.bind(PORT, () => {
+        udpBroudcastSocket.setBroadcast(true)
         console.log(`[BROADCAST] udp broadcast server is started on ${PORT}`)
     })
 }

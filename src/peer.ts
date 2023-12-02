@@ -5,10 +5,10 @@ import { BroadcastManager } from "./broadcast_manager"
 export class Peer {
 
     // Config
-    private port: number;
+    private readonly port: number;
 
     // Work
-    private socket: Socket;
+    private readonly socket: Socket;
     private serverAddresses: string[];
     private currentServerAddress: string | undefined;
     private broadcastManager: BroadcastManager
@@ -22,12 +22,12 @@ export class Peer {
     }
 
     start() {
-        this.broadcastManager.startUpdBroadcast((message, address) => {
-            this.onUpdBroadcastMessage(message, address)
+        this.broadcastManager.startUdpBroadcast((message, address) => {
+            this.onUdpBroadcastMessage(message, address)
         })
     }
 
-    onUpdBroadcastMessage(message: Buffer, address: string) {
+    private onUdpBroadcastMessage(message: Buffer, address: string) {
         if (message.toString() != 'i_am_server') return;
 
         console.log(`[BROADCAST] server on ${address}`);
@@ -40,7 +40,7 @@ export class Peer {
         }
     };
 
-    connectClient(serverAddress: string) {
+    private connectClient(serverAddress: string) {
         this.currentServerAddress = serverAddress;
         this.socket.connect(this.port, serverAddress, () => {
             console.log(`Client connected to : ${serverAddress}:${this.port}`);
@@ -48,7 +48,7 @@ export class Peer {
         });
     }
 
-    async startSendingMessages() {
+    private async startSendingMessages() {
         while (true) {
             await sendRandomMessage(this.socket);
         }

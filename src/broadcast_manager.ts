@@ -16,13 +16,13 @@ export class BroadcastManager {
         this.udpAddress = udpAddress
     }
 
-    startUpdBroadcast(onUpdBroadcastMessage: (message: Buffer, address: string) => void) {
+    startUdpBroadcast(onUdpBroadcastMessage: (message: Buffer, address: string) => void) {
         console.log(`[BROADCAST] udp broadcast address is ${this.udpAddress}`)
 
         this.socket = createSocket('udp4');
         this.socket
             .on('message', (message, rinfo) => {
-                onUpdBroadcastMessage(message, rinfo.address)
+                onUdpBroadcastMessage(message, rinfo.address)
             })
             .bind(() => {
                 this.socket.setBroadcast(true);
