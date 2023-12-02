@@ -16,6 +16,6 @@ services:
       context: .
       dockerfile: Dockerfile
       target: production
-    command: node build/client/client.js
+    command: node build/peer/index.js
     deploy:
       replicas: 3

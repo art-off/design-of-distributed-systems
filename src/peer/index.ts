@@ -1,4 +1,4 @@
-import { Peer } from "peer";
+import { Peer } from "peer/peer";
 
 const peer = new Peer();
 peer.start();

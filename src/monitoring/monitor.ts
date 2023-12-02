@@ -1,5 +1,5 @@
 import dgram from "dgram";
-import {getUdpBroadcastAddress} from "../utils";
+import {getUdpBroadcastAddress} from "../common/utils";
 
 export class Monitor {
 

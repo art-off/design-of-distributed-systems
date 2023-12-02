@@ -1,5 +1,5 @@
 import dgram from "dgram";
-import {getCurrentIpAddress} from "./utils";
+import {getCurrentIpAddress} from "../common/utils";
 
 
 export interface MonitorListenerDelegate {
