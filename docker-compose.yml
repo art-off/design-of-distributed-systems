@@ -1,20 +1,21 @@
 version: "3.8"
 
 services:
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    command: node build/server/server.js
 
-  client:
+  monitor:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
+    command: node build/monitoring/index.js
+    depends_on:
+      - peer
+
+  peer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    command: node build/client/client.js
     deploy:
       replicas: 3
-    command: node build/client/client.js
-    depends_on:
-      - server
