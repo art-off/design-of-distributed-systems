@@ -22,10 +22,18 @@ export class MonitorListener {
         this.socket
             .on('message', (message, rinfo) => {
                 if (message.toString() != 'i_am_monitor') return;
-                this.socket.send(`${getCurrentIpAddress()}`, rinfo.port, rinfo.address);
+                this.socket.send(this.generateMessage(), rinfo.port, rinfo.address);
             })
             .bind(this.port, () => {
                 console.log(`[BROADCAST] udp broadcast listener is started on ${this.port}`);
             });
+    }
+
+    // - Helpers
+
+    private generateMessage(): string {
+        return JSON.stringify({
+            table: this.delegate.monitoringInfo(),
+        });
     }
 }

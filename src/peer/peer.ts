@@ -15,8 +15,10 @@ export class Peer implements MonitorListenerDelegate {
     }
 
     monitoringInfo(): any {
-        return {
-            table: [],
-        }
+        return [
+            22,
+            33,
+            44
+        ]
     }
 }
