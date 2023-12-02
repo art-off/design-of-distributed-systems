@@ -1,6 +1,6 @@
 import { Socket } from "net";
 import { sendRandomMessage } from "send_messages";
-import { startUdpBroadcastOnUdpAddress } from "utils";
+import { BroadcastManager } from "./broadcast_manager"
 
 export class Peer {
 
@@ -11,15 +11,18 @@ export class Peer {
     private socket: Socket;
     private serverAddresses: string[];
     private currentServerAddress: string | undefined;
+    private broadcastManager: BroadcastManager
 
     constructor(port: number, serverAddresses: string[]) {
-        this.socket = new Socket();
         this.serverAddresses = serverAddresses;
         this.port = port
+
+        this.socket = new Socket();
+        this.broadcastManager = new BroadcastManager(this.port)
     }
 
     start() {
-        startUdpBroadcastOnUdpAddress(this.port, (message, address) => {
+        this.broadcastManager.startUpdBroadcast((message, address) => {
             this.onUpdBroadcastMessage(message, address)
         })
     }

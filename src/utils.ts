@@ -1,7 +1,6 @@
 import { networkInterfaces } from "os";
 
 import { IMathExpr, MathOperator } from "./models";
-import { createSocket } from "dgram";
 
 export const randomItem = <T>(items: T[]): T => {
     return items[Math.floor(Math.random() * items.length)];
@@ -39,22 +38,4 @@ export const getUdpBroadcastAddress = (): string | undefined => {
     arr[3] = '255'
 
     return arr.join('.')
-}
-
-const startUpdBroadcast = async (address: string, port: number, onUpdBroadcastMessage: (message: Buffer, address: string) => void) => {
-    const udpBroadcastSocket = createSocket('udp4');
-    udpBroadcastSocket.on('message', (message, rinfo) => {
-        onUpdBroadcastMessage(message, rinfo.address)
-    });
-    udpBroadcastSocket.bind(() => {
-        udpBroadcastSocket.setBroadcast(true);
-        console.log(`[BROADCAST] udp broadcast client is started`)
-        udpBroadcastSocket.send('i_am_client', port, address)
-    });
-}
-
-export const startUdpBroadcastOnUdpAddress = (port: number, onUpdBroadcastMessage: (message: Buffer, address: string) => void) => {
-    const udpBroadcastAddress = getUdpBroadcastAddress();
-    console.log(`[BROADCAST] udp broadcast address is ${udpBroadcastAddress}`)
-    startUpdBroadcast(udpBroadcastAddress, port, onUpdBroadcastMessage);
 }
