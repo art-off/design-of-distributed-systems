@@ -8,6 +8,8 @@ services:
       dockerfile: Dockerfile
       target: production
     command: node build/monitoring/index.js
+    ports:
+      - "3000:3000"
     depends_on:
       - peer
 

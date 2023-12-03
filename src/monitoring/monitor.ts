@@ -1,23 +1,43 @@
 import dgram from "dgram";
 import {getUdpBroadcastAddress} from "../common/utils";
+import {IPeerInfo} from "../common/peer_info_model";
 
 export class Monitor {
 
-    private readonly socket: dgram.Socket;
+    private socket: dgram.Socket;
+    private peersInfo: IPeerInfo[] = [];
 
-    constructor() {
-        this.socket = dgram.createSocket('udp4');
+    async getPeersInfo(): Promise<any[]> {
+        this.peersInfo = []
+        this.checkPeers();
+        // Ждем пока все ответят)
+        await new Promise(r => setTimeout(r, 2000));
+        return this.peersInfo;
     }
 
-    checkPeers() {
-        this.socket
+    private checkPeers() {
+        this.setupSocketIfNeeded(() => {
+            this.socket.send('i_am_monitor', 4562, getUdpBroadcastAddress());
+        });
+    }
+
+    private setupSocketIfNeeded(completion: () => void) {
+        if (this.socket != undefined) {
+            return completion()
+        }
+        this.socket = dgram.createSocket('udp4')
             .on('message', (message, rinfo) => {
+                this.peersInfo.push({
+                    address: rinfo.address,
+                    port: rinfo.port,
+                    table: JSON.parse(message.toString())['table'],
+                });
                 console.log(message.toString(), rinfo)
             })
             .bind(() => {
                 this.socket.setBroadcast(true)
                 console.log(`[BROADCAST] sending upd broadcast`)
-                this.socket.send('i_am_monitor', 4562, getUdpBroadcastAddress());
+                completion()
             });
     }
 }
