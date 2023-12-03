@@ -1,17 +1,17 @@
 import "dgram";
-import { MonitorListenerDelegate, MonitorListener } from "./monitor_listener";
+import { BroadcastListenerDelegate, BroadcastListener } from "./broadcast_listener";
 
 
-export class Peer implements MonitorListenerDelegate {
+export class Peer implements BroadcastListenerDelegate {
 
-    private readonly monitorListener: MonitorListener;
+    private readonly broadcastListener: BroadcastListener;
 
     constructor() {
-        this.monitorListener = new MonitorListener(this);
+        this.broadcastListener = new BroadcastListener(this);
     }
 
     start() {
-        this.monitorListener.startListening();
+        this.broadcastListener.startListening();
     }
 
     monitoringInfo(): any {

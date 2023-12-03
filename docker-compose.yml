@@ -4,7 +4,7 @@ services:
 
   monitor:
     environment:
-      - MONITORING_PORT=4562
+      - BROADCAST_PORT=4562
     build:
       context: .
       dockerfile: Dockerfile
@@ -17,7 +17,7 @@ services:
 
   peer:
     environment:
-      - MONITORING_PORT=4562
+      - BROADCAST_PORT=4562
     build:
       context: .
       dockerfile: Dockerfile

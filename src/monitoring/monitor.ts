@@ -18,7 +18,7 @@ export class Monitor {
 
     private checkPeers() {
         this.setupSocketIfNeeded(() => {
-            this.socket.send('i_am_monitor', Number(process.env.MONITORING_PORT), getUdpBroadcastAddress());
+            this.socket.send('i_am_monitor', Number(process.env.BROADCAST_PORT), getUdpBroadcastAddress());
         });
     }
 
