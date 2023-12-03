@@ -74,11 +74,13 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
         // Если нет пиров, то ничего не делаем
         if (randomPeer == undefined) return;
 
-        await this.tcpClientManager.sendTablesToTcpServer(
+        const receivedTables = await this.tcpClientManager.shareTablesWithTcpServer(
             randomPeer.address,
             randomPeer.port,
             this.tableForSending(),
         );
+
+        this.updateTableByReceived(receivedTables);
     }
 
     private updateTableByReceived(table: IOtherPeer[]) {

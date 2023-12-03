@@ -19,7 +19,7 @@ export class TCPClientManager {
         });
     }
 
-    async sendTablesToTcpServer(address: string, port: number, table: any): Promise<IPeerInfo[]> {
+    async shareTablesWithTcpServer(address: string, port: number, table: any): Promise<IPeerInfo[]> {
         return new Promise((resolve, reject) => {
             this.tcpClient.destroy();
             this.onData = (data) => {
