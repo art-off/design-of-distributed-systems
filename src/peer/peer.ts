@@ -46,7 +46,12 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
     // - TCPManagerDelegate
 
     tableForSending(): IOtherPeer[] {
-        return this.otherPeers;
+        const otherPeersAndSelf = Object.assign([], this.otherPeers);
+        otherPeersAndSelf.push({
+            address: getCurrentIpAddress(),
+            port: this.tcpServerPort,
+        });
+        return otherPeersAndSelf
     }
 
     didReceivedTable(table: IOtherPeer[]): void {
@@ -69,16 +74,10 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
         // Если нет пиров, то ничего не делаем
         if (randomPeer == undefined) return;
 
-        const otherPeersAndSelf  = Object.assign([], this.otherPeers);
-        otherPeersAndSelf.push({
-            address: getCurrentIpAddress(),
-            port: this.tcpServerPort,
-        });
-
         await this.tcpClientManager.sendTablesToTcpServer(
             randomPeer.address,
             randomPeer.port,
-            otherPeersAndSelf
+            this.tableForSending(),
         );
     }
 

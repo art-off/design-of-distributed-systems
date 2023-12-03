@@ -1,5 +1,6 @@
 import * as net from "net";
 import {getCurrentIpAddress} from "../common/utils";
+import {IPeerInfo} from "../common/peer_info_model";
 
 export class TCPClientManager {
 
@@ -18,9 +19,14 @@ export class TCPClientManager {
         });
     }
 
-    sendTablesToTcpServer(address: string, port: number, table: any): Promise<void> {
+    async sendTablesToTcpServer(address: string, port: number, table: any): Promise<IPeerInfo[]> {
         return new Promise((resolve, reject) => {
             this.tcpClient.destroy();
+            this.onData = (data) => {
+                const message = JSON.parse(data.toString());
+                console.log(`[${getCurrentIpAddress()}] [TCP] received: ${JSON.stringify(message)}`);
+                resolve(message);
+            };
             this.onError = (err) => {
                 console.log(`[${getCurrentIpAddress()}] [TCP] error: ${err}`);
                 reject(err);
@@ -31,7 +37,6 @@ export class TCPClientManager {
                 const message = JSON.stringify(table);
                 this.tcpClient.write(message);
                 console.log(`[${getCurrentIpAddress()}] [TCP] sent table: ${message}`);
-                resolve();
             });
         });
     }
