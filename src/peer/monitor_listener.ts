@@ -1,11 +1,12 @@
 import dgram from "dgram";
-import {getCurrentIpAddress} from "../common/utils";
+import * as process from "process";
 
 
 export interface MonitorListenerDelegate {
     monitoringInfo(): any;
 }
 
+// Слушает UDP broadcast сообщения от мониторинга и отвечает на них
 export class MonitorListener {
 
     private readonly port: number;
@@ -13,7 +14,7 @@ export class MonitorListener {
     private readonly socket: dgram.Socket;
 
     constructor(delegate: MonitorListenerDelegate) {
-        this.port = 4562;
+        this.port = Number(process.env.MONITORING_PORT);
         this.delegate = delegate;
         this.socket = dgram.createSocket('udp4');
     }

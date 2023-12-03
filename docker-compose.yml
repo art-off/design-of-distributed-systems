@@ -3,6 +3,8 @@ version: "3.8"
 services:
 
   monitor:
+    environment:
+      - MONITORING_PORT=4562
     build:
       context: .
       dockerfile: Dockerfile
@@ -14,6 +16,8 @@ services:
       - peer
 
   peer:
+    environment:
+      - MONITORING_PORT=4562
     build:
       context: .
       dockerfile: Dockerfile

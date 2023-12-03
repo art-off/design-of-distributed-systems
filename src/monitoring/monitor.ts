@@ -1,6 +1,7 @@
 import dgram from "dgram";
 import {getUdpBroadcastAddress} from "../common/utils";
 import {IPeerInfo} from "../common/peer_info_model";
+import * as process from "process";
 
 export class Monitor {
 
@@ -17,7 +18,7 @@ export class Monitor {
 
     private checkPeers() {
         this.setupSocketIfNeeded(() => {
-            this.socket.send('i_am_monitor', 4562, getUdpBroadcastAddress());
+            this.socket.send('i_am_monitor', Number(process.env.MONITORING_PORT), getUdpBroadcastAddress());
         });
     }
 
