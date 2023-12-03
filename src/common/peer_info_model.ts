@@ -3,3 +3,8 @@ export interface IPeerInfo {
     port: number;
     table: any;
 }
+
+export interface IOtherPeer {
+    address: string;
+    port: number;
+}

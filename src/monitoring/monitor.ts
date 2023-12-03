@@ -33,7 +33,6 @@ export class Monitor {
                     port: rinfo.port,
                     table: JSON.parse(message.toString())['table'],
                 });
-                console.log(message.toString(), rinfo)
             })
             .bind(() => {
                 this.socket.setBroadcast(true)
