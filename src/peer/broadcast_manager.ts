@@ -1,6 +1,6 @@
 import dgram from "dgram";
 import * as process from "process";
-import {getUdpBroadcastAddress} from "../common/utils";
+import {getCurrentIpAddress, getUdpBroadcastAddress} from "../common/utils";
 import {IOtherPeer} from "./peer";
 
 
@@ -37,9 +37,12 @@ export class BroadcastManager {
         this.socket.on('message', (message, rinfo) => {
             switch (message.toString()) {
                 case 'i_am_monitor':
+                    // Если получаем от монитора, то отправляем ему свою таблицу (для отображения в мониторинге)
                     this.socket.send(this.generateMessage(), rinfo.port, rinfo.address);
                     break;
                 case 'i_am_peer':
+                    // Если получаем от другого пира, то отправляем делегату, что появился новый пир
+                    if (getCurrentIpAddress() == rinfo.address) return;
                     this.delegate.didReceivedOtherPeer({
                         address: rinfo.address,
                         port: rinfo.port,
