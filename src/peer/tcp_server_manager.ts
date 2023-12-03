@@ -36,5 +36,9 @@ export class TCPServerManager {
             this.delegate.didReceivedTable(message);
             console.log(`[${getCurrentIpAddress()}] [TCP] received table: ${JSON.stringify(message)}`);
         });
+
+        const message = JSON.stringify(this.delegate.tableForSending());
+        socket.write(message);
+        console.log(`[${getCurrentIpAddress()}] [TCP] sent table: ${message}`);
     }
 }
