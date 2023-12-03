@@ -1,24 +1,36 @@
 import "dgram";
-import { BroadcastListenerDelegate, BroadcastListener } from "./broadcast_listener";
+import { BroadcastManagerDelegate, BroadcastManager } from "./broadcast_manager";
 
+export interface IOtherPeer {
+    address: string;
+    port: number;
+}
 
-export class Peer implements BroadcastListenerDelegate {
+export class Peer implements BroadcastManagerDelegate {
 
-    private readonly broadcastListener: BroadcastListener;
+    private readonly broadcastManager: BroadcastManager;
+    private otherPeers: IOtherPeer[] = [];
 
     constructor() {
-        this.broadcastListener = new BroadcastListener(this);
+        this.broadcastManager = new BroadcastManager(this);
     }
 
-    start() {
-        this.broadcastListener.startListening();
+    async start() {
+        await this.broadcastManager.bind();
+        this.broadcastManager.startListening();
+        await this.broadcastManager.sendBroadcast();
     }
 
+    // - BroadcastListenerDelegate
     monitoringInfo(): any {
-        return [
-            22,
-            33,
-            44
-        ]
+        return this.otherPeers;
+    }
+
+    didReceivedOtherPeer(otherPeer: IOtherPeer) {
+        // Добавляем если еще нет, иначе ничего не делаем
+        const index = this.otherPeers.findIndex(p => p.address === otherPeer.address && p.port === otherPeer.port);
+        if (index == -1) {
+            this.otherPeers.push(otherPeer);
+        }
     }
 }

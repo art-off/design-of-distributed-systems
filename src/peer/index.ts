@@ -1,4 +1,8 @@
 import { Peer } from "peer/peer";
 
-const peer = new Peer();
-peer.start();
+const main = async () => {
+    const peer = new Peer();
+    await peer.start();
+}
+
+main();
