@@ -3,6 +3,7 @@ import { BroadcastManagerDelegate, BroadcastManager } from "./broadcast_manager"
 import { IOtherPeer } from "common/peer_info_model";
 import {TCPServerManager, TCPManagerDelegate} from "./tcp_server_manager";
 import {TCPClientManager} from "./tcp_client_manager";
+import {getCurrentIpAddress} from "../common/utils";
 
 export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
 
@@ -10,9 +11,11 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
     private readonly tcpServerManager: TCPServerManager;
     private readonly tcpClientManager: TCPClientManager;
 
+    private readonly tcpServerPort: number;
     private otherPeers: IOtherPeer[] = [];
 
     constructor(tcpServerPort: number) {
+        this.tcpServerPort = tcpServerPort;
         this.broadcastManager = new BroadcastManager(this, tcpServerPort);
         this.tcpServerManager = new TCPServerManager(this, tcpServerPort);
         this.tcpClientManager = new TCPClientManager();
@@ -47,7 +50,7 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
     }
 
     didReceivedTable(table: IOtherPeer[]): void {
-        // this.updateTableByReceived(table);
+        this.updateTableByReceived(table);
     }
 
     // - Helpers
@@ -66,15 +69,24 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
         // Если нет пиров, то ничего не делаем
         if (randomPeer == undefined) return;
 
-        console.log(`[TCP] connecting to ${randomPeer.address}:${randomPeer.port}`)
+        const otherPeersAndSelf  = Object.assign([], this.otherPeers);
+        otherPeersAndSelf.push({
+            address: getCurrentIpAddress(),
+            port: this.tcpServerPort,
+        });
 
-        const table = await this.tcpClientManager.getTableFromTcpServer(randomPeer.address, randomPeer.port);
-        console.log(`[TCP] received table: ${JSON.stringify(table)}`);
-        this.updateTableByReceived(table)
+        await this.tcpClientManager.sendTablesToTcpServer(
+            randomPeer.address,
+            randomPeer.port,
+            otherPeersAndSelf
+        );
     }
 
     private updateTableByReceived(table: IOtherPeer[]) {
         table.forEach(peer => {
+            // Свой адрес нам там не нужен
+            if (peer.address == getCurrentIpAddress()) return;
+
             const index = this.otherPeers.findIndex(p => p.address == peer.address && p.port == peer.port);
             if (index == -1) {
                 this.otherPeers.push(peer);

@@ -1,4 +1,5 @@
 import * as net from "net";
+import {getCurrentIpAddress} from "../common/utils";
 
 export class TCPClientManager {
 
@@ -17,18 +18,20 @@ export class TCPClientManager {
         });
     }
 
-    async getTableFromTcpServer(address: string, port: number): Promise<any> {
+    sendTablesToTcpServer(address: string, port: number, table: any): Promise<void> {
         return new Promise((resolve, reject) => {
-            this.onData = (data) => {
-                resolve(JSON.parse(data.toString()));
-            };
+            this.tcpClient.destroy();
             this.onError = (err) => {
-                console.log(`[TCP] error: ${err}`);
+                console.log(`[${getCurrentIpAddress()}] [TCP] error: ${err}`);
                 reject(err);
             };
 
             this.tcpClient.connect(port, address, () => {
-                console.log(`[TCP] connected to ${address}:${port}`);
+                console.log(`[${getCurrentIpAddress()}] [TCP] connected to ${address}:${port}`);
+                const message = JSON.stringify(table);
+                this.tcpClient.write(message);
+                console.log(`[${getCurrentIpAddress()}] [TCP] sent table: ${message}`);
+                resolve();
             });
         });
     }

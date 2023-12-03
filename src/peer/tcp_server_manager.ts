@@ -1,5 +1,6 @@
 import * as net from "net";
 import {IOtherPeer} from "../common/peer_info_model";
+import {getCurrentIpAddress} from "../common/utils";
 
 export interface TCPManagerDelegate {
     tableForSending(): IOtherPeer[];
@@ -30,9 +31,10 @@ export class TCPServerManager {
     }
 
     private handleConnection(socket: net.Socket) {
-        const message = JSON.stringify(this.delegate.tableForSending());
-        socket.write(message);
-        socket.destroy()
-        console.log(`[TCP] sent table: ${message}`);
+        socket.on('data', (data) => {
+            const message = JSON.parse(data.toString());
+            this.delegate.didReceivedTable(message);
+            console.log(`[${getCurrentIpAddress()}] [TCP] received table: ${JSON.stringify(message)}`);
+        });
     }
 }
