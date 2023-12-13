@@ -62,6 +62,8 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
 
     private async startConnectionToRandomPeer() {
         while (true) {
+            // Держать список "недавно удаленных"
+            // И не чистить их тут, в начале 5сек итерации
             await new Promise(r => setTimeout(r, 5000));
             await this.connectToRandomPeer();
         }
@@ -74,13 +76,22 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
         // Если нет пиров, то ничего не делаем
         if (randomPeer == undefined) return;
 
-        const receivedTables = await this.tcpClientManager.shareTablesWithTcpServer(
-            randomPeer.address,
-            randomPeer.port,
-            this.tableForSending(),
-        );
+        try {
+            const receivedTables = await this.tcpClientManager.shareTablesWithTcpServer(
+                randomPeer.address,
+                randomPeer.port,
+                this.tableForSending(),
+            );
 
-        this.updateTableByReceived(receivedTables);
+            this.updateTableByReceived(receivedTables);
+        } catch {
+            // Удалить пир из списка, если не удалось подключиться
+            const index = this.otherPeers.findIndex(p => p.address == randomPeer.address && p.port == randomPeer.port);
+            if (index != -1) {
+                this.otherPeers.splice(index, 1);
+            }
+            console.log(`[${getCurrentIpAddress()}] [TCP] failed to connect to ${randomPeer.address}:${randomPeer.port}`);
+        }
     }
 
     private updateTableByReceived(table: IOtherPeer[]) {
