@@ -7,6 +7,8 @@ import {getCurrentIpAddress} from "../common/utils";
 
 export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
 
+    private info: any | undefined;
+
     private readonly broadcastManager: BroadcastManager;
     private readonly tcpServerManager: TCPServerManager;
     private readonly tcpClientManager: TCPClientManager;
@@ -45,17 +47,22 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
 
     // - TCPManagerDelegate
 
-    tableForSending(): IOtherPeer[] {
+    messageForSending(): { table: IOtherPeer[], info: any } {
         const otherPeersAndSelf = Object.assign([], this.otherPeers);
         otherPeersAndSelf.push({
             address: getCurrentIpAddress(),
             port: this.tcpServerPort,
         });
-        return otherPeersAndSelf
+
+        return {
+            table: otherPeersAndSelf,
+            info: otherPeersAndSelf
+        }
     }
 
-    didReceivedTable(table: IOtherPeer[]): void {
-        this.updateTableByReceived(table);
+    didReceivedMessage(message: {table: IOtherPeer[], info: any}): void {
+        this.updateTableByReceived(message.table);
+        // обновить инфу
     }
 
     // - Helpers
@@ -70,20 +77,22 @@ export class Peer implements BroadcastManagerDelegate, TCPManagerDelegate {
     }
 
     private async connectToRandomPeer() {
+        console.log(`[${getCurrentIpAddress()}] [TCP] connecting`);
         // Подключаемся и ждем пока нам отправят таблицу, потом отправляет свою таблица в ответ
         const randomPeer = this.otherPeers[Math.floor(Math.random() * this.otherPeers.length)];
 
         // Если нет пиров, то ничего не делаем
-        if (randomPeer == undefined) return;
+        if (randomPeer == undefined) {
+            console.log(`[${getCurrentIpAddress()}] [TCP] emptyOtherPeers: ${this.otherPeers}`);
+            return;
+        }
 
         try {
-            const receivedTables = await this.tcpClientManager.shareTablesWithTcpServer(
+            await this.tcpClientManager.shareTablesWithTcpServer(
                 randomPeer.address,
                 randomPeer.port,
-                this.tableForSending(),
+                this.messageForSending(),
             );
-
-            this.updateTableByReceived(receivedTables);
         } catch {
             // Удалить пир из списка, если не удалось подключиться
             const index = this.otherPeers.findIndex(p => p.address == randomPeer.address && p.port == randomPeer.port);

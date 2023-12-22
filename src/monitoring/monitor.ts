@@ -12,8 +12,13 @@ export class Monitor {
         this.peersInfo = []
         this.checkPeers();
         // Ждем пока все ответят)
-        await new Promise(r => setTimeout(r, 2000));
-        return this.peersInfo;
+        await new Promise(r => setTimeout(r, 500));
+        return this.peersInfo.map((v) => {
+            return {
+                address: v.address,
+                port: v.port,
+            }
+        })
     }
 
     private checkPeers() {

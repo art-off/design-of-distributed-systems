@@ -3,8 +3,8 @@ import {IOtherPeer} from "../common/peer_info_model";
 import {getCurrentIpAddress} from "../common/utils";
 
 export interface TCPManagerDelegate {
-    tableForSending(): IOtherPeer[];
-    didReceivedTable(table: IOtherPeer[]): void;
+    messageForSending(): { table: IOtherPeer[], info: any };
+    didReceivedMessage(message: { table: IOtherPeer[], info: any }): void;
 }
 
 export class TCPServerManager {
@@ -33,12 +33,8 @@ export class TCPServerManager {
     private handleConnection(socket: net.Socket) {
         socket.on('data', (data) => {
             const message = JSON.parse(data.toString());
-            this.delegate.didReceivedTable(message);
+            this.delegate.didReceivedMessage(message);
             console.log(`[${getCurrentIpAddress()}] [TCP] received table: ${JSON.stringify(message)}`);
         });
-
-        const message = JSON.stringify(this.delegate.tableForSending());
-        socket.write(message);
-        console.log(`[${getCurrentIpAddress()}] [TCP] sent table: ${message}`);
     }
 }

@@ -1,6 +1,6 @@
 import * as net from "net";
 import {getCurrentIpAddress} from "../common/utils";
-import {IPeerInfo} from "../common/peer_info_model";
+import {IOtherPeer} from "../common/peer_info_model";
 
 export class TCPClientManager {
 
@@ -19,14 +19,9 @@ export class TCPClientManager {
         });
     }
 
-    async shareTablesWithTcpServer(address: string, port: number, table: any): Promise<IPeerInfo[]> {
+    async shareTablesWithTcpServer(address: string, port: number, message: any): Promise<void> {
         return new Promise((resolve, reject) => {
             this.tcpClient.destroy();
-            this.onData = (data) => {
-                const message = JSON.parse(data.toString());
-                console.log(`[${getCurrentIpAddress()}] [TCP] received: ${JSON.stringify(message)}`);
-                resolve(message);
-            };
             this.onError = (err) => {
                 console.log(`[${getCurrentIpAddress()}] [TCP] error: ${err}`);
                 reject(err);
@@ -34,9 +29,10 @@ export class TCPClientManager {
 
             this.tcpClient.connect(port, address, () => {
                 console.log(`[${getCurrentIpAddress()}] [TCP] connected to ${address}:${port}`);
-                const message = JSON.stringify(table);
-                this.tcpClient.write(message);
-                console.log(`[${getCurrentIpAddress()}] [TCP] sent table: ${message}`);
+                const m = JSON.stringify(message);
+                this.tcpClient.write(m);
+                console.log(`[${getCurrentIpAddress()}] [TCP] sent message: ${m}`);
+                resolve();
             });
         });
     }

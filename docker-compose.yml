@@ -24,4 +24,4 @@ services:
       target: production
     command: node build/peer/index.js
     deploy:
-      replicas: 3
+      replicas: 5
